@@ -16,7 +16,7 @@
 #include <pthread.h>
 #define FD_LIMIT 65535
 #define MAX_EVENT_NUMBER 1024
-#define TIMESLOT 5
+#define TIMESLOT 2
 
 static int pipefd[2];
 
@@ -50,11 +50,11 @@ void addsig(int sig) {
   assert(sigaction(sig, &sa, NULL) != -1);
 }
 /*定时器回调函数, 它删除非活动连接socket上的注册事件, 并关闭之*/
-void cb_func(client_data *user_data) {
+void cb(client_data *user_data) {
   epoll_ctl(epollfd, EPOLL_CTL_DEL, user_data->sockfd, 0);
   assert(user_data);
   close(user_data->sockfd);
-  printf("close fd%d\n", user_data->sockfd);
+  printf("close fd:%d\n", user_data->sockfd);
 }
 int main(int argc, char *argv[]) {
   if (argc <= 2) {
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
          * 最后将定时器添加到链time_heap中*/
         heap_timer *timer = new heap_timer(3 * TIMESLOT);
         timer->user_data = &users[connfd];
-        timer->cb_func = cb_func;
+        timer->cb = cb;
         users[connfd].timer = timer;
         th.add_timer(timer);
       }
@@ -147,14 +147,14 @@ int main(int argc, char *argv[]) {
         if (ret < 0) {
           /*如果发生读错误, 则关闭连接, 并移除其对应的定时器*/
           if (errno != EAGAIN) {
-            cb_func(&users[sockfd]);
+            cb(&users[sockfd]);
             if (timer) {
               th.del_timer(timer);
             }
           }
         } else if (ret == 0) {
           /*如果对方已经关闭连接, 则我们也关闭连接, 并移除对应的定时器*/
-          cb_func(&users[sockfd]);
+          cb(&users[sockfd]);
           if (timer) {
             th.del_timer(timer);
           }
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
             printf("adjust timer once\n");
             heap_timer *new_timer = new heap_timer(3 * TIMESLOT);
             new_timer->user_data = timer->user_data;
-            new_timer->cb_func = timer->cb_func;
+            new_timer->cb = timer->cb;
             new_timer->user_data->timer = new_timer;
             th.del_timer(timer);
             th.add_timer(new_timer);
