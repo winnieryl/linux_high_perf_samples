@@ -15,7 +15,7 @@ public:
     /*参数thread_number是线程池中线程的数量,
      * max_requests是请求队列中最多允许的、等待处理的请求的数量*/
     threadpool(int thread_number = 8, int max_requests = 10000);
-    ～threadpool();
+    ~threadpool();
     /*往请求队列中添加任务*/
     bool append(T *request);
 
@@ -49,7 +49,7 @@ threadpool<T>::threadpool(int thread_number, int max_requests)
     /*创建thread_number个线程, 并将它们都设置为脱离线程*/
     for (int i = 0; i < thread_number; ++i)
     {
-        printf("create the%dth thread\n", i);
+        printf("create the %dth thread\n", i);
         if (pthread_create(m_threads + i, NULL, worker, this) != 0)
         {
             delete[] m_threads;
@@ -63,7 +63,7 @@ threadpool<T>::threadpool(int thread_number, int max_requests)
     }
 }
 template <typename T>
-threadpool<T>::～threadpool()
+threadpool<T>::~threadpool()
 {
     delete[] m_threads;
     m_stop = true;

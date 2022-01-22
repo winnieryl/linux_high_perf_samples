@@ -17,7 +17,7 @@ public:
         }
     }
     /*销毁信号量*/
-    ～sem() { sem_destroy(&m_sem); }
+    ~sem() { sem_destroy(&m_sem); }
     /*等待信号量*/
     bool wait() { return sem_wait(&m_sem) == 0; }
     /*增加信号量*/
@@ -39,7 +39,7 @@ public:
         }
     }
     /*销毁互斥锁*/
-    ～locker() { pthread_mutex_destroy(&m_mutex); }
+    ~locker() { pthread_mutex_destroy(&m_mutex); }
     /*获取互斥锁*/
     bool lock() { return pthread_mutex_lock(&m_mutex) == 0; }
     /*释放互斥锁*/
@@ -67,7 +67,7 @@ public:
         }
     }
     /*销毁条件变量*/
-    ～cond()
+    ~cond()
     {
         pthread_mutex_destroy(&m_mutex);
         pthread_cond_destroy(&m_cond);
