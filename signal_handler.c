@@ -1,8 +1,8 @@
 
 #define _GNU_SOURCE
 #include <unistd.h>
-#include<stdio.h>
-#include<signal.h>
+#include <stdio.h>
+#include <signal.h>
 #include <sys/syscall.h>
 
 #ifndef SYS_gettid
@@ -22,7 +22,7 @@ int main()
 {
     struct sigaction sa;
     sa.sa_handler = int_handler1;
-    //sigfillset(&sa.sa_mask);
+    // sigfillset(&sa.sa_mask);
     sigemptyset(&sa.sa_mask);
     sa.sa_flags |= SA_RESTART | SA_NODEFER;
     sigaction(SIGINT, &sa, NULL);

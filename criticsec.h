@@ -3,10 +3,11 @@
 #include <pthread.h>
 #include <semaphore.h>
 #define INFINITE 0xFFFFFFFF
-typedef struct {
+typedef struct
+{
     pthread_mutex_t mutex;
     pthread_cond_t cond;
-}Event, *PEvent;
+} Event, *PEvent;
 
 /* POSIX semaphore wrappers */
 void Sem_init(sem_t *sem, int pshared, unsigned int value);
